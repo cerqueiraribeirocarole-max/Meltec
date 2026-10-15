@@ -1,0 +1,11 @@
+drop policy records_public_read on public.meltec_records;
+drop policy records_admin_read on public.meltec_records;
+drop policy records_staff_read on public.meltec_records;
+drop policy records_admin_insert on public.meltec_records;
+drop policy records_staff_insert on public.meltec_records;
+drop policy records_admin_update on public.meltec_records;
+drop policy records_staff_update on public.meltec_records;
+create policy records_anon_read on public.meltec_records for select to anon using(kind='settings' or (kind='products' and coalesce((data->>'published')::boolean,true)));
+create policy records_authenticated_read on public.meltec_records for select to authenticated using((select meltec_private.is_admin()) or kind='settings' or (kind='products' and (coalesce((data->>'published')::boolean,true) or (select meltec_private.staff_id()) is not null)) or ((select meltec_private.staff_id()) is not null and ((kind='staff' and id=(select meltec_private.staff_id())) or (kind='orders' and data->>'assignedTo'=(select meltec_private.staff_id())))));
+create policy records_authenticated_insert on public.meltec_records for insert to authenticated with check((select meltec_private.is_admin()) or (kind='products' and (select meltec_private.staff_id()) is not null and created_by=(select auth.uid())));
+create policy records_authenticated_update on public.meltec_records for update to authenticated using((select meltec_private.is_admin()) or ((select meltec_private.staff_id()) is not null and ((kind='products' and created_by=(select auth.uid())) or (kind='orders' and data->>'assignedTo'=(select meltec_private.staff_id()))))) with check((select meltec_private.is_admin()) or ((select meltec_private.staff_id()) is not null and ((kind='products' and created_by=(select auth.uid())) or (kind='orders' and data->>'assignedTo'=(select meltec_private.staff_id())))));

@@ -1,0 +1,3 @@
+import {NextResponse} from 'next/server';
+import {serverClient} from '../../../lib/supabase';
+export async function POST(req:Request){if(req.headers.get('origin')!==new URL(req.url).origin)return new Response('Forbidden',{status:403});const f=await req.formData();const email=String(f.get('email')||'').trim(),password=String(f.get('password')||'');if(password.length<12)return NextResponse.redirect(new URL('/login?error=password',req.url),303);const s=await serverClient();const {error}=await s.auth.signUp({email,password,options:{emailRedirectTo:new URL('/api/auth/confirm',req.url).toString()}});return NextResponse.redirect(new URL(error?'/login?error=signup':'/login?message=check-email',req.url),303)}
