@@ -1,0 +1,4 @@
+'use client';
+import {useId,useState} from 'react';
+import {Eye,EyeOff} from 'lucide-react';
+export default function PasswordField({label='Senha',name='password',newPassword=false,minLength=8}:{label?:string;name?:string;newPassword?:boolean;minLength?:number}){const[visible,setVisible]=useState(false);const id=useId();return <div className="password-field"><label htmlFor={id}>{label}</label><div className="password-input"><input id={id} name={name} type={visible?'text':'password'} autoComplete={newPassword?'new-password':'current-password'} required minLength={minLength} maxLength={128} placeholder={newPassword?'Pelo menos 12 caracteres':'Sua senha'}/><button type="button" className="password-eye" aria-label={visible?'Ocultar '+label.toLowerCase():'Mostrar '+label.toLowerCase()} aria-pressed={visible} aria-controls={id} onClick={()=>setVisible(v=>!v)}>{visible?<EyeOff size={19}/>:<Eye size={19}/>}</button></div></div>}

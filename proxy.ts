@@ -1,4 +1,4 @@
 import {createServerClient} from '@supabase/ssr';
 import {NextResponse,type NextRequest} from 'next/server';
 export async function proxy(req:NextRequest){let response=NextResponse.next({request:req});const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;if(!url||!key)return response;const s=createServerClient(url,key,{cookies:{getAll(){return req.cookies.getAll()},setAll(values,headers){values.forEach(({name,value})=>req.cookies.set(name,value));response=NextResponse.next({request:req});values.forEach(({name,value,options})=>response.cookies.set(name,value,options));if(headers)Object.entries(headers).forEach(([key,value])=>response.headers.set(key,value))}}});await s.auth.getUser();response.headers.set('Cache-Control','private, no-store');return response}
-export const config={matcher:['/admin/:path*','/funcionario/:path*','/api/:path*','/login']};
+export const config={matcher:['/admin/:path*','/funcionario/:path*','/api/:path*','/login','/cadastro','/conta/:path*']};
